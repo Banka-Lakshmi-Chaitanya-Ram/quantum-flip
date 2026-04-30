@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>QUANTUM FLIP</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="home" class="screen">
+  <div class="home-bg"><div class="grid-lines"></div><canvas id="homeBg" style="position:absolute;inset:0;width:100%;height:100%;opacity:.35;"></canvas></div>
+  <div class="logo-wrap">
+    <div class="logo-sub">// VECTOR TECHNICIAN v2.0 //</div>
+    <div class="logo-main" data-text="QUANTUM FLIP">QUANTUM<br>FLIP</div>
+    <div class="logo-tag">EXPLOIT THE GEOMETRY</div>
+  </div>
+  <div class="home-btns">
+    <button class="btn-primary" onclick="showScreen('levelSelect')">&#9654;&nbsp; SOLO MODE</button>
+    <button class="btn-primary" style="border-color:var(--omega);color:var(--omega);" onclick="showScreen('vsLevelSelect')">&#9876;&nbsp; VERSUS 2P</button>
+    <button class="btn-secondary" onclick="showScreen('howto')">HOW TO PLAY</button>
+    <button class="btn-secondary" onclick="showScreen('settings')">SETTINGS</button>
+  </div>
+  <div class="home-footer">QUANTUM FLIP &nbsp;|&nbsp; v2.0 &nbsp;|&nbsp; ALL DIMENSIONS UNSTABLE</div>
+</div>
+
+<div id="levelSelect" class="screen hidden">
+  <div class="ls-header">
+    <button class="back-btn" onclick="showScreen('home')">&#8592; BACK</button>
+    <div class="ls-title">SELECT LEVEL</div>
+    <div class="ls-stats" id="lsStats">0 / 0 &#9733;</div>
+  </div>
+  <div class="ls-grid" id="lsGrid"></div>
+</div>
+
+<div id="gameScreen" class="screen hidden">
+  <div id="gameHud">
+    <button id="hudBack" onclick="pauseGame()">&#8592; EXIT</button>
+    <div id="hudLvlName">LEVEL 01</div>
+    <div id="hudDim">&#9650; ALPHA</div>
+    <div id="hudStars">&#9733; 0/0</div>
+    <div id="hudPhase">PHASE &#9679;&#9679;&#9679;</div>
+    <div id="hudDeaths">DEATHS: 0</div>
+  </div>
+  <div id="canvasWrap">
+    <canvas id="gc"></canvas>
+    <div id="gameOverlay" class="hidden">
+      <div id="goTitle">CORE REACHED</div>
+      <div class="go-stars" id="goStars"></div>
+      <div id="goSub"></div>
+      <div class="go-btns" id="goBtns"></div>
+    </div>
+  </div>
+  <div id="touchControls">
+    <div class="touch-group"><button class="tc-btn" id="tcL">&#9664;</button><button class="tc-btn" id="tcR">&#9654;</button></div>
+    <button class="tc-btn tc-phase" id="tcPhase">&#10227; PHASE</button>
+    <button class="tc-btn" id="tcJump">&#9650; JUMP</button>
+  </div>
+</div>
+
+<div id="vsLevelSelect" class="screen hidden">
+  <div class="ls-header">
+    <button class="back-btn" onclick="showScreen('home')">&#8592; BACK</button>
+    <div class="ls-title" style="color:var(--omega);">&#9876; VERSUS — SELECT LEVEL</div>
+    <div class="ls-stats" id="vsLsStats" style="color:var(--muted);font-size:10px;">P1: WASD+F &nbsp;|&nbsp; P2: ARROWS+SHIFT</div>
+  </div>
+  <div class="ls-grid" id="vsLsGrid"></div>
+</div>
+
+<div id="vsScreen" class="screen hidden">
+  <div id="vsHud">
+    <div class="vs-hud-half">
+      <div class="vs-player-tag p1">P1</div>
+      <div class="vs-dim alpha" id="vsHudDim1">&#9650; ALPHA</div>
+      <div class="vs-stars" id="vsHudStars1">&#9733; 0/0</div>
+      <div class="vs-phase" id="vsHudPhase1">&#9679;&#9679;&#9679;</div>
+      <div class="vs-deaths" id="vsHudDeaths1">&#10013; 0</div>
+    </div>
+    <div style="display:flex;align-items:center;padding:0 10px;gap:8px;flex-shrink:0;">
+      <button id="vsHudBack" style="background:none;border:1px solid var(--border);color:var(--muted);font-family:inherit;font-size:10px;padding:4px 11px;cursor:pointer;" onclick="pauseVsGame()">&#8592; EXIT</button>
+      <div id="vsHudLvl" style="font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:2px;"></div>
+    </div>
+    <div class="vs-hud-half p2">
+      <div class="vs-deaths" id="vsHudDeaths2">&#10013; 0</div>
+      <div class="vs-phase" id="vsHudPhase2">&#9679;&#9679;&#9679;</div>
+      <div class="vs-stars" id="vsHudStars2">&#9733; 0/0</div>
+      <div class="vs-dim alpha" id="vsHudDim2">&#9650; ALPHA</div>
+      <div class="vs-player-tag p2">P2</div>
+    </div>
+  </div>
+  <div id="vsCanvasWrap">
+    <div id="vsTop"><div class="vs-label p1">P1 — WASD + F</div><canvas id="gcTop"></canvas></div>
+    <div class="vs-divider-bar"></div>
+    <div id="vsBot"><div class="vs-label p2">P2 — ARROWS + SHIFT</div><canvas id="gcBot"></canvas></div>
+    <div id="vsKeyGuide">P1: WASD move &#8226; W/SPACE jump &#8226; F phase &nbsp;|&nbsp; P2: ARROWS move &#8226; UP jump &#8226; SHIFT phase &nbsp;|&nbsp; ESC exit</div>
+    <div id="vsOverlay" class="hidden">
+      <div id="vsWinTitle">LEVEL COMPLETE</div>
+      <div class="vs-score-row">
+        <div class="vs-score-cell"><div class="vs-score-label">P1 TIME</div><div class="vs-score-val p1c" id="vsScoreTime1">&#8212;</div></div>
+        <div class="vs-score-cell"><div class="vs-score-label">P1 DEATHS</div><div class="vs-score-val p1c" id="vsScoreDeath1">&#8212;</div></div>
+        <div class="vs-score-cell"><div class="vs-score-label">P2 DEATHS</div><div class="vs-score-val p2c" id="vsScoreDeath2">&#8212;</div></div>
+        <div class="vs-score-cell"><div class="vs-score-label">P2 TIME</div><div class="vs-score-val p2c" id="vsScoreTime2">&#8212;</div></div>
+      </div>
+      <div id="vsWinSub"></div>
+      <div class="go-btns" id="vsWinBtns"></div>
+    </div>
+  </div>
+</div>
+
+<div id="howto" class="screen hidden">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div class="howto-box">
+      <div class="ht-title">HOW TO PLAY</div><hr class="d">
+      <div class="ht-sec"><div class="ht-h">OBJECTIVE</div><div class="ht-b">Collect all stars in each level, then reach the CORE exit. You are a Vector Technician inside a corrupted digital blueprint. The only way forward is to exploit the geometry.</div></div>
+      <div class="ht-sec o"><div class="ht-h">THE PHASE SHIFT</div><div class="ht-b">Press PHASE at any time — even in mid-air — to flip the world. Platforms, stars, hazards all mirror vertically. You start with 3 charges. Each star collected refills one charge.</div></div>
+      <div class="ht-sec"><div class="ht-h">CONTROLS — SOLO (KEYBOARD)</div><div class="ht-b"><span class="ht-k">A</span> <span class="ht-k">D</span> or <span class="ht-k">&#8592;</span> <span class="ht-k">&#8594;</span> Move<br><span class="ht-k">W</span> or <span class="ht-k">SPACE</span> Jump<br><span class="ht-k">F</span> or <span class="ht-k">S</span> Phase Shift<br><span class="ht-k">R</span> Quick restart<br><span class="ht-k">ESC</span> Exit to level select</div></div>
+      <div class="ht-sec o"><div class="ht-h">CONTROLS — VERSUS</div><div class="ht-b"><b style="color:var(--alpha)">P1:</b> <span class="ht-k">W</span><span class="ht-k">A</span><span class="ht-k">S</span><span class="ht-k">D</span> Move/Jump &nbsp; <span class="ht-k">F</span> Phase<br><b style="color:var(--omega)">P2:</b> <span class="ht-k">&#8593;</span><span class="ht-k">&#8592;</span><span class="ht-k">&#8595;</span><span class="ht-k">&#8594;</span> Move/Jump &nbsp; <span class="ht-k">SHIFT</span> Phase<br><span class="ht-k">ESC</span> Exit to level select</div></div>
+      <div class="ht-sec r"><div class="ht-h">HAZARDS &amp; ENEMIES</div><div class="ht-b"><b style="color:#ff4455">SPIKES</b> — Red triangles kill on contact. Phase to flip them out of your path.<br><b style="color:#ff6b35">DRONES</b> — Patrol back and forth. Touch them = death. They also flip when you phase.<br><b style="color:#ffe066">MOVING PLATFORMS</b> — Carry you along, but be careful at the edges.</div></div>
+      <div class="ht-sec o"><div class="ht-h">THE EXIT (CORE)</div><div class="ht-b">Some cores require a specific dimension to open. ALPHA = arrive from top side, OMEGA = flipped side. ANY = open always once all stars collected.</div></div>
+      <div class="ht-sec"><div class="ht-h">TIPS</div><div class="ht-b">&#8226; You can phase mid-air — time it to land on flipped platforms.<br>&#8226; Coyote time: you can jump briefly after walking off a ledge.<br>&#8226; Jump buffering: press jump just before landing — it fires on contact.<br>&#8226; Stars refill charges — prioritize pickups to stay flexible.</div></div>
+      <button class="btn-primary" onclick="showScreen('home')">&#8592; BACK TO HOME</button>
+    </div>
+  </div>
+</div>
+
+<div id="settings" class="screen hidden">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div class="set-box">
+      <div class="set-title">SETTINGS</div>
+      <div class="set-row"><div class="set-label">SCREEN SHAKE</div><div class="toggle on" id="togShake" onclick="toggleSetting('shake',this)"></div></div>
+      <div class="set-row"><div class="set-label">SCANLINES</div><div class="toggle on" id="togScan" onclick="toggleSetting('scan',this)"></div></div>
+      <div class="set-row"><div class="set-label">SOUND FX</div><div class="toggle on" id="togSound" onclick="toggleSetting('sound',this)"></div></div>
+      <div class="set-row"><div class="set-label">THEME MODE</div><button class="btn-secondary" style="font-size:10px;padding:5px 11px;" onclick="toggleTheme()">TOGGLE</button></div>
+      <div class="set-row"><div class="set-label">RESET PROGRESS</div><button class="btn-secondary" style="font-size:10px;padding:5px 11px;" onclick="resetProgress()">WIPE DATA</button></div>
+      <button class="btn-primary" onclick="showScreen('home')">&#8592; BACK</button>
+    </div>
+  </div>
+</div>
+
+<script src="levels.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
